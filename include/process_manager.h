@@ -3,17 +3,21 @@
 
 #include <vector>
 #include <string>
+#include <thread>
+#include <mutex>
+#include <future>
 
-// Declaración de la estructura para representar un proceso
+// Process structure as you defined earlier
 struct Process {
     int pid;
     std::string name;
+    double cpuUsage;
+    double memoryUsage;
 };
 
-// Función para obtener todos los procesos activos
 std::vector<Process> getActiveProcesses();
-
-// Función para obtener el nombre del proceso a partir de su PID
-std::string getProcessName(int pid);
+void fetchProcessData(int pid, std::vector<Process>& processes);
+void listProcesses();  // Entry function to get processes using multithreading
+void batchProcessData(const std::vector<int>& pids, std::vector<Process>& processes);
 
 #endif // PROCESS_MANAGER_H
