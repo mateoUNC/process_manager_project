@@ -1,96 +1,88 @@
-# Tareas del Proyecto
+# Project Tasks
 
-## Módulo 1: Gestión de procesos (Process Manager)
-### Submódulos y tareas:
+## Module 1: Process Management (Process Manager)
+### Submodules and Tasks:
 
-#### Obtener la lista de procesos
-- Investigar cómo acceder a la lista de procesos en tu sistema operativo.
-- Implementar la función que obtiene los IDs de los procesos activos.
-- Implementar la función que obtiene el nombre de cada proceso.
+#### Retrieve the List of Processes
+- Research how to access the list of processes in your operating system.
+- Implement the function that obtains the IDs of active processes.
+- Implement the function that retrieves the name of each process.
 
-#### Obtener el uso de CPU y memoria de los procesos
-- Investigar cómo obtener la información de uso de CPU y memoria de los procesos (puedes usar herramientas del sistema como ps o archivos en /proc en Linux).
-- Crear una función para recuperar el uso de CPU y memoria de un proceso dado su PID.
+#### Retrieve CPU and Memory Usage of Processes
+- Research how to obtain CPU and memory usage information for processes (you can use system tools like `ps` or files in `/proc` on Linux).
+- Create a function to retrieve CPU and memory usage for a process given its PID.
 
-#### Mostrar los procesos
-- Crear una función para mostrar en consola la lista de procesos con su PID, nombre, CPU y memoria.
+#### Display Processes
+- Create a function to display the list of processes in the console with their PID, name, CPU, and memory usage.
 
-#### Optimización del rendimiento
-- Realizar pruebas para ver si la obtención de procesos es eficiente bajo carga (por ejemplo, con muchos procesos).
-- Implementar una estrategia de cacheo de procesos si es necesario para mejorar el rendimiento.
+#### Performance Optimization
+- Conduct tests to see if retrieving processes is efficient under load (e.g., with many processes).
+- Implement a process caching strategy if necessary to improve performance.
 
-## Módulo 2: Monitoreo paralelo de recursos (Parallelized Resource Monitoring)
-### Submódulos y tareas:
+## Module 2: Parallelized Resource Monitoring
+### Submodules and Tasks:
 
-#### Recopilar datos de recursos (CPU y memoria) en tiempo real
-- Crear un hilo que recupere el uso de CPU de todos los procesos.
-- Crear un hilo que recupere el uso de memoria de todos los procesos.
-- Realizar pruebas de rendimiento para garantizar que los hilos no causen problemas de bloqueo.
+#### Collect Real-Time Resource Data (CPU and Memory)
+- Create a thread that retrieves CPU usage for all processes.
+- Create a thread that retrieves memory usage for all processes.
+- Conduct performance tests to ensure that threads do not cause blocking issues.
 
-#### Implementar un pool de hilos
-- Investigar cómo implementar un pool de hilos eficiente (puedes usar una librería como std::thread o std::async en C++).
-- Crear una función para gestionar múltiples hilos que se encargan del monitoreo de los procesos.
+#### Implement a Thread Pool
+- Research how to implement an efficient thread pool (you can use a library like `std::thread` or `std::async` in C++).
+- Create a function to manage multiple threads responsible for monitoring processes.
 
-#### Optimizar el uso de hilos
-- Evitar la creación de hilos innecesarios o ineficientes, asegurando que el número de hilos no sea tan alto que consuma demasiado CPU.
-- Limitar la frecuencia de actualizaciones de los datos de monitoreo, por ejemplo, realizando actualizaciones cada X segundos.
+#### Optimize Thread Usage
+- Avoid creating unnecessary or inefficient threads, ensuring that the number of threads is not too high to consume excessive CPU.
+- Limit the frequency of monitoring updates, e.g., updating every X seconds.
 
-#### Manejo de resultados y sincronización de hilos
-- Asegurarse de que los datos de uso de CPU y memoria se mantengan sincronizados entre los hilos (puedes usar mutexes o std::atomic).
-- Probar la correcta sincronización y la coherencia de los resultados de los hilos.
+#### Thread Result Management and Synchronization
+- Ensure that CPU and memory usage data remains synchronized between threads (you can use mutexes or `std::atomic`).
+- Test for correct synchronization and consistency of thread results.
 
-## Módulo 3: Control de procesos (Process Control)
-### Submódulos y tareas:
+## Module 3: Process Control
+### Submodules and Tasks:
 
-#### Implementar la función de terminación de procesos (kill)
-- Investigar cómo enviar señales de terminación a los procesos en tu sistema (por ejemplo, usando kill en Linux o API específicas en otros SO).
-- Implementar la función para matar un proceso dado su PID.
+#### Implement Process Termination Function (kill)
+- Research how to send termination signals to processes in your system (e.g., using `kill` in Linux or specific APIs in other OS).
+- Implement the function to kill a process given its PID.
 
-#### Verificar permisos de terminación
-- Asegurarse de que solo los procesos a los que el usuario tiene acceso (y permisos adecuados) puedan ser terminados.
-- Gestionar las excepciones o errores que se produzcan si un usuario intenta terminar un proceso al que no tiene acceso.
+#### Verify Termination Permissions
+- Ensure that only processes that the user has access to (and appropriate permissions) can be terminated.
+- Handle exceptions or errors if a user attempts to terminate a process they do not have access to.
 
-#### Interacción con el usuario
-- Implementar la funcionalidad de la línea de comandos para permitir al usuario ingresar el PID de un proceso a terminar.
-- Agregar un mecanismo de confirmación antes de terminar el proceso (para evitar errores).
+#### User Interaction
+- Implement command-line functionality to allow the user to input the PID of a process to be terminated.
+- Add a confirmation mechanism before terminating the process (to avoid mistakes).
 
-#### Manejo de errores y excepciones
-- Capturar y manejar cualquier error que pueda ocurrir durante la terminación de un proceso (por ejemplo, cuando el proceso ya no existe).
-- Asegurarse de que el sistema notifique al usuario sobre errores o fallos.
+#### Error and Exception Handling
+- Capture and handle any errors that may occur during the termination of a process (e.g., when the process no longer exists).
+- Ensure that the system notifies the user of errors or failures.
 
-## Módulo 4: Registro y manejo de errores (Logging and Error Handling)
-### Submódulos y tareas:
+## Module 4: Logging and Error Handling
+### Submodules and Tasks:
 
-#### Implementar el sistema de logs
-- Crear una clase o función que permita escribir logs en un archivo con timestamps.
-- Asegurarse de que los logs contengan información relevante como las acciones del usuario (terminación de procesos, etc.) y cualquier error que ocurra.
+#### Implement Logging System
+- Create a class or function that writes logs to a file with timestamps.
+- Ensure that logs contain relevant information such as user actions (process termination, etc.) and any errors that occur.
 
-#### Registrar las acciones del usuario
-- Registrar cada acción del usuario, como la terminación de un proceso o la actualización de recursos.
-- Asegurarse de que el sistema de logs esté estructurado para que sea fácil de leer y depurar.
+#### Log User Actions
+- Log each user action, such as process termination or resource updates.
+- Ensure that the logging system is structured for easy reading and debugging.
 
-#### Manejo de errores críticos
-- Registrar cualquier error crítico que ocurra durante la ejecución del programa.
-- Implementar un sistema de notificación de errores críticos al usuario (por ejemplo, mensajes en la consola o en un archivo de log).
+#### Handle Critical Errors
+- Log any critical errors that occur during program execution.
+- Implement an error notification system for critical errors (e.g., messages in the console or a log file).
 
-#### Optimización del rendimiento del logging
-- Asegurarse de que el sistema de logs no afecte negativamente el rendimiento del programa.
-- Considerar la implementación de logs asincrónicos si es necesario.
+#### Logging Performance Optimization
+- Ensure that the logging system does not negatively impact program performance.
+- Consider implementing asynchronous logging if necessary.
 
-## Módulo 5: Optimización (HPC Optimization)
-### Submódulos y tareas:
+## Module 5: Optimization (HPC Optimization)
+### Submodules and Tasks:
 
-#### Identificación de causas de sobrecarga de CPU o memoria
-- Realizar un análisis de uso de recursos para identificar las posibles causas de sobrecarga (por ejemplo, demasiados hilos, frecuencia alta de actualización, etc.).
-- Utilizar herramientas de profiling para obtener estadísticas de rendimiento.
+#### Identify Causes of CPU or Memory Overload
+- Analyze resource usage to identify possible causes of overload (e.g., too many threads, high update frequency, etc.).
+- Use profiling tools to obtain performance statistics.
 
-#### Reducir la frecuencia de actualización de datos
-- Implementar una forma de reducir la frecuencia con la que se actualizan los datos de recursos, por ejemplo, actualizando cada 1-2 segundos en lugar de cada 0.1 segundos.
-
-#### Optimizar el uso de hilos
-- Reducir el número de hilos activos cuando no sea necesario.
-- Implementar un pool de hilos para evitar la creación de hilos innecesarios y controlar el número de hilos activos.
-
-#### Uso de estructuras de datos ligeras
-- Evaluar si las estructuras de datos que estás utilizando son demasiado pesadas para la carga del sistema.
-- Implementar estructuras de datos más ligeras y optimizadas para la cantidad de información que estás manejando.
+#### Reduce Data Update Frequency
+- Implement a way to reduce the frequency of resource data updates, e.g., updating every 1-2 seconds instead of every
