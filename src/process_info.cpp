@@ -5,15 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
-// Utility function to get username from UID
-std::string getUserNameFromUid(int uid) {
-    struct passwd *pw = getpwuid(uid);
-    if (pw) {
-        return std::string(pw->pw_name);
-    }
-    return "Unknown";
-}
+#include "utils.h"
 
 // Function to get process user
 std::string getProcessUser(int pid) {

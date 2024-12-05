@@ -1,78 +1,109 @@
-1. **Main Module (main.cpp)**
+### 1. Main Module (main.cpp)
+**Responsibility:**
+- **Program Entry Point**: Contains the `main()` function, which serves as the starting point of the application.
+- **Command-Line Parsing**: Interprets user command-line arguments to decide which action to take (e.g., listing processes, monitoring resources, terminating a process).
+- **Coordinator**: Instantiates other modules and coordinates their interactions by calling the appropriate functions based on user input.
 
-   - **Responsibility**:
-     - Program entry point: The `main()` function is where everything starts.
-     - Command-line parsing: This module will interpret the user’s command-line arguments and decide what action to take (e.g., listing processes, monitoring resources, terminating a process).
-     - Coordinator: It will instantiate other modules and coordinate their interactions (e.g., calling functions to list processes, monitor resources, or handle termination).
-   - **Key Functions**:
-     - `int main(int argc, char* argv[])`: Parse the command-line arguments and invoke appropriate actions (e.g., `listProcesses()`, `monitorResources()`, `terminateProcess()`).
-   - **Example of command-line arguments**:
-     - `./process_manager list`: List processes.
-     - `./process_manager monitor`: Start monitoring CPU and memory usage.
-     - `./process_manager terminate <PID>`: Terminate a specific process.
+**Key Functions:**
+- **`int main(int argc, char* argv[])`**:
+  - Parses command-line arguments to determine the requested action.
+  - Invokes functions from other modules such as `monitorProcesses()` for resource monitoring.
+  - Handles actions like:
+    - `./process_manager list`: List processes.
+    - `./process_manager monitor`: Start monitoring CPU and memory usage.
+    - `./process_manager terminate <PID>`: Terminate a specific process.
 
-2. **Process Manager Module (process\_manager.cpp)**
+### 2. Process Information Module (process_info.h and process_info.cpp)
+**Responsibility:**
+- **Process Data Retrieval**: Handles fetching detailed information about processes, including their IDs, users, commands, and memory usage.
+- **Process Enumeration**: Provides a function to retrieve a list of active processes.
+- **Encapsulation of Process Data**: Defines the `Process` struct, encapsulating all relevant process information.
 
-   - **Responsibility**:
-     - Listing active processes: This module will handle fetching the list of active processes from the system.
-     - Multithreading for process retrieval: It will use multiple threads to gather process information (e.g., PID, name, CPU usage, memory usage) to improve performance.
-     - Efficient data collection: This will ensure that even under high load, process data can be retrieved efficiently.
-   - **Key Functions**:
-     - `void listProcesses()`: Fetch and display the list of running processes with their details (PID, name, CPU usage, memory usage). Use multithreading to optimize data fetching for high efficiency.
-   - **Example**:
-     - Retrieve information from `/proc` (Linux) or use system commands like `ps` or `top` in the background.
-   - **Multithreading**:
-     - Use a thread pool to spawn multiple threads, each responsible for retrieving a specific process’ data concurrently.
+**Key Functions:**
+- **`std::vector<Process> getActiveProcesses()`**:
+  - Retrieves a list of active processes by reading the `/proc` directory.
+  - Populates the `Process` struct with details like PID, user, command, and memory usage.
+- **`std::string getProcessUser(int pid)`**: Retrieves the username associated with a process's UID.
+- **`std::string getProcessCommand(int pid)`**: Retrieves the command name of the process from `/proc/[pid]/comm`.
+- **`double getProcessMemoryUsage(int pid)`**: Retrieves the memory usage of the process by reading `/proc/[pid]/status`.
 
-3. **Resource Monitoring Module (resource\_monitor.cpp)**
+**Process Struct**:
+- Contains fields for `pid`, `user`, `cpuUsage`, `memoryUsage`, `prevTotalTime`, and `command`.
 
-   - **Responsibility**:
-     - Real-time monitoring of CPU and memory usage.
-     - Multithreading for monitoring: Similar to process listing, it will use multithreading to handle different resources (CPU and memory) concurrently, so that the tool does not consume too much time or resources.
-   - **Key Functions**:
-     - `void monitorCPU()`: Continuously track CPU usage in real-time. Example: Use system APIs (e.g., `/proc/stat` on Linux) to fetch CPU stats.
-     - `void monitorMemory()`: Continuously track memory usage in real-time. Example: Use `/proc/meminfo` or system-specific tools to track memory stats.
-   - **Multithreading for parallel monitoring**:
-     - Monitor multiple resources simultaneously by delegating tasks to separate threads.
+### 3. Resource Monitoring Module (resource_monitor.h and resource_monitor.cpp)
+**Responsibility:**
+- **Resource Monitoring Loop**: Manages the continuous monitoring of system resources, such as CPU and memory usage, for all active processes.
+- **CPU Usage Calculation**: Calculates CPU usage for each process over time.
+- **Data Aggregation**: Collects and updates process information at regular intervals.
 
-4. **Process Control Module (process\_control.cpp)**
+**Key Functions:**
+- **`void monitorProcesses()`**:
+  - Runs an infinite loop that updates and displays process information periodically.
+  - Coordinates the retrieval of process data and CPU usage calculations.
+  - Clears the screen and displays updated information in a formatted table.
+- **`long getTotalCpuTime()`**:
+  - Reads and calculates the total CPU time from `/proc/stat`.
+  - Includes all CPU times (user, system, idle, etc.).
+- **`long getProcessTotalTime(int pid)`**:
+  - Retrieves the total CPU time used by a specific process from `/proc/[pid]/stat`.
+- **`double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long numCores)`**:
+  - Calculates the CPU usage percentage for a process, adjusting for the number of CPU cores.
 
-   - **Responsibility**:
-     - Terminate processes: This module will handle the logic for terminating processes based on a given PID.
-     - Permissions management: Ensure that only processes that the user has permission to terminate are actually terminated.
-     - Error handling: Ensure that any failures, such as invalid PIDs or permission issues, are handled appropriately.
-   - **Key Functions**:
-     - `void terminateProcess(int pid)`: Accept a PID and attempt to terminate the corresponding process. Use system calls like `kill(pid, SIGTERM)` or `kill(pid, SIGKILL)` for process termination. Handle permission errors (e.g., root privileges required to terminate system-critical processes).
-     - **Logging**: Log any errors or actions that occur while trying to terminate a process (e.g., invalid PID, lack of permission).
+**Multithreading Considerations**:
+- Future enhancements could include multithreading to improve performance and responsiveness.
 
-5. **Logging Module (logger.cpp)**
+### 4. Process Display Module (process_display.h and process_display.cpp)
+**Responsibility:**
+- **User Interface Presentation**: Manages the formatting and display of process information to the console.
+- **Output Formatting**: Ensures that the displayed data is neatly formatted, aligned, and easy to read.
+- **Data Truncation and Alignment**: Handles the truncation of long strings and aligns columns appropriately.
 
-   - **Responsibility**:
-     - Logging system actions: Every significant action, such as listing processes, monitoring resources, or terminating processes, should be logged.
-     - Timestamping: Logs should include a timestamp to keep track of when the event occurred.
-     - Error logging: Log errors encountered during execution (e.g., failed to fetch process data, failed to terminate process, permission issues).
-   - **Key Functions**:
-     - `void log(const std::string& message)`: Write log messages to a file or standard output. Include timestamps for each log entry.
-     - `void logError(const std::string& errorMessage)`: Specifically for logging errors, e.g., failed process termination or insufficient permissions.
+**Key Functions:**
+- **`void printProcesses(const std::vector<Process>& processes)`**:
+  - Prints a table of processes, including headers and separators.
+  - Formats columns for PID, User, CPU (%), Memory (MB), and Command.
+  - Limits the number of displayed processes (e.g., top 30 by CPU usage).
+  - Uses manipulators like `std::setw`, `std::left`, and `std::right` for alignment.
 
-6. **Utility Module (utils.cpp)**
+### 5. Utility Module (utils.h and utils.cpp)
+**Responsibility:**
+- **General-Purpose Utilities**: Provides helper functions that can be used across multiple modules.
+- **User Information Retrieval**: Contains functions related to user data, such as mapping UIDs to usernames.
 
-   - **Responsibility**:
-     - Utility functions: This will contain general-purpose helper functions like thread management and thread pooling, which will be used across various parts of the project.
-     - Thread management: Functions for creating threads, managing thread synchronization, and pooling threads efficiently.
-     - Data handling: Helper functions for handling data safely between threads (e.g., using mutexes or other synchronization methods).
-   - **Key Functions**:
-     - `void createThread(std::function<void()> func)`: A helper function to easily create and manage threads.
-     - `void threadPool(int numThreads, std::function<void()> task)`: Create a pool of threads to perform tasks concurrently.
-     - **Thread-safe data collection**: Use mutexes or other synchronization mechanisms to ensure safe, thread-safe collection of data (e.g., CPU and memory stats).
+**Key Functions:**
+- **`std::string getUserNameFromUid(int uid)`**: Converts a user ID (UID) to a username by querying the system's user database.
 
-7. **Tests**
+**Note**: Additional utility functions for thread management, data handling, or other common tasks can be added as needed.
 
-   - **Unit Testing** is crucial to ensure that your code is functioning correctly and to prevent future regressions.
-   - Test each module separately to verify their individual functionality:
-     - **Process Manager**: Test if processes are listed correctly.
-     - **Resource Monitor**: Test if CPU and memory usage are monitored properly.
-     - **Process Control**: Test if processes can be terminated correctly and handle errors (e.g., invalid PIDs).
-     - **Logger**: Test if logs are generated correctly and timestamped.
-   - For testing, you can create mock functions and test each module independently before integrating them.
+### 6. Process Control Module (process_control.cpp and process_control.h)
+**Responsibility:**
+- **Process Termination**: Provides functionality to terminate processes based on a given PID.
+- **Permission Management**: Ensures that the user has the necessary permissions to terminate the specified process.
+- **Error Handling**: Handles errors such as invalid PIDs or insufficient permissions gracefully.
+
+**Key Functions:**
+- **`void terminateProcess(int pid)`**:
+  - Attempts to terminate the process with the specified PID.
+  - Uses system calls like `kill(pid, SIGTERM)` or `kill(pid, SIGKILL)` for termination.
+  - Checks for and handles errors, such as invalid PIDs or lack of permissions.
+
+**Implementation Status**:
+- Ensure that this module is integrated with `main.cpp` for handling the terminate command.
+
+### 7. Logging Module (logger.cpp and logger.h)
+**Responsibility:**
+- **Action Logging**: Records significant actions taken by the program, such as listing processes, monitoring resources, or terminating processes.
+- **Error Logging**: Captures and logs errors encountered during execution for troubleshooting purposes.
+- **Timestamping**: Adds timestamps to log entries to track when events occur.
+
+**Key Functions:**
+- **`void log(const std::string& message)`**:
+  - Writes informational messages to a log file or standard output.
+  - Includes a timestamp with each entry.
+- **`void logError(const std::string& errorMessage)`**:
+  - Specifically logs error messages.
+  - Helps in diagnosing issues like failed process termination or permission errors.
+
+**Implementation Status**:
+- Logging can be integrated into other modules, especially `process_control` and `resource_monitor`, to record actions and errors.
 

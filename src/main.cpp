@@ -1,9 +1,6 @@
-//main.cpp
-
-#include <iostream>
-#include "process_manager.h"
+#include "resource_monitor.h"
 
 int main() {
-    monitorProcesses();  // Iniciar la monitorización en vivo de procesos
+    monitorProcesses();
     return 0;
 }

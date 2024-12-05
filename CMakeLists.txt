@@ -11,6 +11,9 @@ add_executable(process_manager_project
     src/resource_monitor.cpp
     src/logger.cpp
     src/utils.cpp
+    src/process_info.cpp
+    src/process_display.cpp
+    src/process_control.cpp
 )
 
 # Otros ajustes de compilación si es necesario
