@@ -1,11 +1,8 @@
-// process_manager.h
+#ifndef PROCESS_INFO_H
+#define PROCESS_INFO_H
 
-#ifndef PROCESS_MANAGER_H
-#define PROCESS_MANAGER_H
-
-#include <vector>
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 // Structure to store process information
 struct Process {
@@ -17,8 +14,10 @@ struct Process {
     std::string command; // Command name
 };
 
+// Function declarations
 std::vector<Process> getActiveProcesses();
-void printProcesses(const std::vector<Process>& processes);
-void monitorProcesses();
+std::string getProcessUser(int pid);
+std::string getProcessCommand(int pid);
+double getProcessMemoryUsage(int pid);
 
-#endif // PROCESS_MANAGER_H
+#endif // PROCESS_INFO_H
