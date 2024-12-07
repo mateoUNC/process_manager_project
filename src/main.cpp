@@ -1,6 +1,7 @@
 #include "resource_monitor.h"
+#include "command_handler.h"
 
 int main() {
-    monitorProcesses();
+    startCommandLoop();
     return 0;
 }

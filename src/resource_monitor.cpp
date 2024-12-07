@@ -1,6 +1,7 @@
 #include "resource_monitor.h"
 #include "process_display.h"
 #include "process_info.h"    // Include this to access getActiveProcesses()
+#include "globals.h"
 #include <unistd.h>
 #include <unordered_map>
 #include <thread>
@@ -70,9 +71,9 @@ void monitorProcesses() {
     // Get the number of CPU cores
     long numCores = sysconf(_SC_NPROCESSORS_ONLN);
 
-    while (true) {
+    while (monitoringActive.load()) {
         // Sleep for the interval
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
 
         // Get total CPU time at the end
         long totalCpuTime = getTotalCpuTime();
