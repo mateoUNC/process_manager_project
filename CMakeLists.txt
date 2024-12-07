@@ -9,7 +9,6 @@ include_directories(include)
 # Add executable with all source files
 add_executable(process_manager_project
     src/main.cpp
-    src/process_manager.cpp
     src/resource_monitor.cpp
     src/logger.cpp
     src/utils.cpp

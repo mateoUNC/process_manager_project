@@ -67,15 +67,37 @@ void handleSigint(int sig) {
     std::cout.flush();
 }
 
-
-
 void printHelp() {
-    std::cout << "Available commands:\n"
-              << "  start_monitor         - Start monitoring processes.\n"
-              << "  stop_monitor          - Stop monitoring processes.\n"
-              << "  kill <PID>            - Kill the process with the specified PID.\n"
-              << "  help                  - Show this help message.\n"
-              << "  exit, quit            - Exit the application.\n";
+    std::cout << BOLD << GREEN << "Available Commands:\n" << RESET;
+
+    // List of commands
+    std::cout << BOLD << CYAN << "  start_monitor" << RESET << " [cpu|memory] "
+              << YELLOW << "- Start monitoring processes.\n" << RESET
+              << "                     Default sorting is by CPU usage. Use 'memory' to sort by memory.\n";
+
+    std::cout << BOLD << CYAN << "  stop_monitor" << RESET << "             "
+              << YELLOW << "- Stop monitoring processes.\n" << RESET;
+
+    std::cout << BOLD << CYAN << "  kill <PID>" << RESET << "              "
+              << YELLOW << "- Kill the process with the specified PID.\n" << RESET;
+
+    std::cout << BOLD << CYAN << "  help" << RESET << "                    "
+              << YELLOW << "- Show this help message.\n" << RESET;
+
+    std::cout << BOLD << CYAN << "  exit, quit" << RESET << "              "
+              << YELLOW << "- Exit the application.\n" << RESET;
+
+    std::cout << BOLD << RED << "\nExamples:\n" << RESET;
+    std::cout << "  " << GREEN << "start_monitor" << RESET << " cpu\n";
+    std::cout << "  " << GREEN << "start_monitor" << RESET << " memory\n";
+    std::cout << "  " << GREEN << "kill 1234" << RESET << "\n";
+    std::cout << "  " << GREEN << "stop_monitor" << RESET << "\n";
+    std::cout << "  " << GREEN << "exit" << RESET << "\n";
+
+    std::cout << BOLD << GREEN << "\nNotes:\n" << RESET;
+    std::cout << YELLOW << "  - Use 'start_monitor' without arguments to sort by CPU usage by default.\n";
+    std::cout << "  - Press " << BOLD << "Ctrl+C" << RESET << YELLOW
+              << " to stop monitoring without exiting the program.\n" << RESET;
 }
 
 void startCommandLoop() {
@@ -114,6 +136,15 @@ void startCommandLoop() {
 
         if (command == "start_monitor") {
             if (!monitoringActive.load()) {
+                std::string sortBy = "cpu"; // Default sorting criterion
+                if (iss >> sortBy) {
+                    if (sortBy != "cpu" && sortBy != "memory") {
+                        std::cout << "Invalid argument. Use 'cpu' or 'memory'. Defaulting to 'cpu'.\n";
+                        sortBy = "cpu";
+                    }
+                }
+
+                sortingCriterion = sortBy; // Update the global sorting criterion
                 monitoringActive.store(true);
                 monitoringThread = std::thread(monitorProcesses);
             } else {

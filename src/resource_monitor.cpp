@@ -4,6 +4,7 @@
 #include "globals.h"
 #include <unistd.h>
 #include <unordered_map>
+#include <unordered_set>
 #include <thread>
 #include <chrono>
 #include <algorithm>
@@ -16,7 +17,7 @@ long getTotalCpuTime() {
     std::ifstream statFile("/proc/stat");
     if (!statFile.is_open()) {
         std::cerr << "Failed to open /proc/stat" << std::endl;
-        return 0;
+        return 0; // Return a default value
     }
 
     std::string line;
@@ -34,7 +35,7 @@ long getTotalCpuTime() {
 long getProcessTotalTime(int pid) {
     std::ifstream statFile("/proc/" + std::to_string(pid) + "/stat");
     if (!statFile.is_open()) {
-        // Optionally, you can print an error message here
+        std::cerr << "Failed to open /proc/" << pid << "/stat" << std::endl;
         return 0;
     }
 
@@ -65,75 +66,63 @@ double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long num
 void monitorProcesses() {
     std::unordered_map<int, Process> processes;
 
-    // Initialize previous total CPU time
     long previousTotalCpuTime = getTotalCpuTime();
 
-    // Get the number of CPU cores
-    long numCores = sysconf(_SC_NPROCESSORS_ONLN);
-
     while (monitoringActive.load()) {
-        // Sleep for the interval
         std::this_thread::sleep_for(std::chrono::seconds(3));
 
-        // Get total CPU time at the end
         long totalCpuTime = getTotalCpuTime();
         long totalCpuTimeDelta = totalCpuTime - previousTotalCpuTime;
 
-        // Read active processes
         std::vector<Process> activeProcesses = getActiveProcesses();
 
-        // Update CPU usage for each process
-        for (auto& process : activeProcesses) {
-            // If the process is already in the map, use its prevTotalTime
+        std::unordered_set<int> activePids;
+        for (auto process : activeProcesses) {
+            activePids.insert(process.pid);
+
             auto it = processes.find(process.pid);
             if (it != processes.end()) {
                 process.prevTotalTime = it->second.prevTotalTime;
             } else {
-                // First time seeing this process; initialize prevTotalTime
                 process.prevTotalTime = 0;
             }
 
-            // Get process CPU times
             long totalProcessTime = getProcessTotalTime(process.pid);
             long processTimeDelta = totalProcessTime - process.prevTotalTime;
             process.prevTotalTime = totalProcessTime;
 
-            // Calculate CPU usage
-            process.cpuUsage = calculateCpuUsage(processTimeDelta, totalCpuTimeDelta, numCores);
+            process.cpuUsage = calculateCpuUsage(processTimeDelta, totalCpuTimeDelta, sysconf(_SC_NPROCESSORS_ONLN));
 
-            // Update the processes map
             processes[process.pid] = process;
         }
 
-        // Update previous total CPU time
-        previousTotalCpuTime = totalCpuTime;
-
-        // Convert map to vector for sorting
-        std::vector<Process> processesVector;
-        for (const auto& pair : processes) {
-            processesVector.push_back(pair.second);
-        }
-
-        // Sort processes by CPU usage
-        std::sort(processesVector.begin(), processesVector.end(), [](const Process& a, const Process& b) {
-            return a.cpuUsage > b.cpuUsage;
-        });
-
-        // Clear the screen
-        system("clear");
-
-        // Print the processes
-        printProcesses(processesVector);
-
-        // Remove processes that are no longer active
         for (auto it = processes.begin(); it != processes.end();) {
-            if (std::find_if(activeProcesses.begin(), activeProcesses.end(), [&](const Process& p) {
-                return p.pid == it->first;
-            }) == activeProcesses.end()) {
+            if (activePids.find(it->first) == activePids.end()) {
                 it = processes.erase(it);
             } else {
                 ++it;
             }
         }
+
+        previousTotalCpuTime = totalCpuTime;
+
+        std::vector<Process> processesVector;
+        for (const auto& pair : processes) {
+            processesVector.push_back(pair.second);
+        }
+
+        // Sort processes based on the sorting criterion
+        if (sortingCriterion == "cpu") {
+            std::sort(processesVector.begin(), processesVector.end(), [](const Process& a, const Process& b) {
+                return a.cpuUsage > b.cpuUsage;
+            });
+        } else if (sortingCriterion == "memory") {
+            std::sort(processesVector.begin(), processesVector.end(), [](const Process& a, const Process& b) {
+                return a.memoryUsage > b.memoryUsage;
+            });
+        }
+
+        std::cout << "\033[2J\033[H"; // Clear screen
+        printProcesses(processesVector);
     }
 }
