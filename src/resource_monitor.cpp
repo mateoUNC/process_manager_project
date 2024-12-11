@@ -1,7 +1,8 @@
 #include "resource_monitor.h"
 #include "process_display.h"
-#include "process_info.h"    // Include this to access getActiveProcesses()
+#include "process_info.h"    // For getActiveProcesses()
 #include "globals.h"
+#include "logger.h"          // Include the Logger header
 #include <unistd.h>
 #include <unordered_map>
 #include <unordered_set>
@@ -17,6 +18,7 @@ long getTotalCpuTime() {
     std::ifstream statFile("/proc/stat");
     if (!statFile.is_open()) {
         std::cerr << "Failed to open /proc/stat" << std::endl;
+        Logger::getInstance().error("Failed to open /proc/stat file.");
         return 0; // Return a default value
     }
 
@@ -35,7 +37,9 @@ long getTotalCpuTime() {
 long getProcessTotalTime(int pid) {
     std::ifstream statFile("/proc/" + std::to_string(pid) + "/stat");
     if (!statFile.is_open()) {
-        std::cerr << "Failed to open /proc/" << pid << "/stat" << std::endl;
+        std::string errMsg = "Failed to open /proc/" + std::to_string(pid) + "/stat";
+        std::cerr << errMsg << std::endl;
+        Logger::getInstance().error(errMsg);
         return 0;
     }
 
@@ -50,20 +54,21 @@ long getProcessTotalTime(int pid) {
     ss >> utime >> stime >> cutime >> cstime;
 
     long totalProcessTime = utime + stime + cutime + cstime;
-
     return totalProcessTime;
 }
 
 double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long numCores) {
-    if (totalCpuTimeDelta == 0) return 0.0;
+    if (totalCpuTimeDelta == 0) {
+        Logger::getInstance().warning("Total CPU time delta is zero, cannot calculate CPU usage.");
+        return 0.0;
+    }
 
-    // Calculate CPU usage percentage
     double cpuUsage = ((double)processTimeDelta / (double)totalCpuTimeDelta) * numCores * 100.0;
-
     return cpuUsage;
 }
 
 void monitorCpu() {
+    Logger::getInstance().info("CPU monitoring thread started.");
     long previousTotalCpuTime = getTotalCpuTime();
 
     while (monitoringActive.load()) {
@@ -73,7 +78,6 @@ void monitorCpu() {
         }
 
         if (!monitoringActive.load()) break;
-
         std::this_thread::sleep_for(std::chrono::seconds(3));
 
         long totalCpuTime = getTotalCpuTime();
@@ -94,18 +98,19 @@ void monitorCpu() {
             }
         }
     }
+
+    Logger::getInstance().info("CPU monitoring thread stopped.");
 }
 
-
 void monitorMemory() {
+    Logger::getInstance().info("Memory monitoring thread started.");
     while (monitoringActive.load()) {
-        // Pause monitoring if paused
+        // Pause if monitoring is paused
         while (monitoringPaused.load() && monitoringActive.load()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
         if (!monitoringActive.load()) break;
-
         std::this_thread::sleep_for(std::chrono::seconds(3));
 
         auto activeProcesses = getActiveProcesses();
@@ -120,17 +125,18 @@ void monitorMemory() {
             }
         }
     }
+    Logger::getInstance().info("Memory monitoring thread stopped.");
 }
 
 void monitorProcesses() {
+    Logger::getInstance().info("Process display thread started.");
     while (monitoringActive.load()) {
-        // Pause monitoring if paused
+        // Pause if monitoring is paused
         while (monitoringPaused.load() && monitoringActive.load()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
         if (!monitoringActive.load()) break;
-
         std::this_thread::sleep_for(std::chrono::seconds(3));
 
         std::vector<Process> processesVector;
@@ -142,13 +148,13 @@ void monitorProcesses() {
 
                 // Apply filter
                 if (filterCriterion.first == "user" && process.user != filterCriterion.second) {
-                    continue; // Skip if the user doesn't match
+                    continue; 
                 }
                 if (filterCriterion.first == "cpu" && process.cpuUsage <= std::stod(filterCriterion.second)) {
-                    continue; // Skip if CPU usage is below threshold
+                    continue;
                 }
                 if (filterCriterion.first == "memory" && process.memoryUsage <= std::stod(filterCriterion.second)) {
-                    continue; // Skip if memory usage is below threshold
+                    continue;
                 }
 
                 processesVector.push_back(process);
@@ -170,4 +176,5 @@ void monitorProcesses() {
         std::cout << "\033[2J\033[H"; // Clear screen
         printProcesses(processesVector);
     }
+    Logger::getInstance().info("Process display thread stopped.");
 }

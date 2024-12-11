@@ -5,6 +5,7 @@
 #include "resource_monitor.h"
 #include "process_display.h"
 #include "logging.h"
+#include "logger.h"
 #include "globals.h"
 #include <iostream>
 #include <sstream>
@@ -300,47 +301,66 @@ void startCommandLoop() {
                 if (filterType == "user") {
                     std::string user;
                     if (iss >> user) {
-                        killProcessesByUser(user); // Ensure user is passed as a std::string
+                        filterCriterion = { "user", user };
+                        Logger::getInstance().info("User applied filter by user: " + user);
                     } else {
-                        std::cout << "Usage: kill_all user <username>\n";
+                        std::cout << "Usage: filter user <username>\n";
+                        Logger::getInstance().warning("Invalid filter command usage - missing username");
                     }
                 } else if (filterType == "cpu") {
                     double cpuThreshold;
                     if (iss >> cpuThreshold) {
                         filterCriterion = { "cpu", std::to_string(cpuThreshold) };
-                        std::cout << "Filtering processes with CPU usage > " << cpuThreshold << "%\n";
+                        Logger::getInstance().info("User applied CPU filter: > " + std::to_string(cpuThreshold) + "%");
                     } else {
                         std::cout << "Usage: filter cpu <threshold>\n";
+                        Logger::getInstance().warning("Invalid filter command usage - missing cpu threshold");
                     }
                 } else if (filterType == "memory") {
                     double memoryThreshold;
                     if (iss >> memoryThreshold) {
                         filterCriterion = { "memory", std::to_string(memoryThreshold) };
-                        std::cout << "Filtering processes with memory usage > " << memoryThreshold << " MB\n";
+                        Logger::getInstance().info("User applied Memory filter: > " + std::to_string(memoryThreshold) + " MB");
                     } else {
                         std::cout << "Usage: filter memory <threshold>\n";
+                        Logger::getInstance().warning("Invalid filter command usage - missing memory threshold");
                     }
                 } else {
                     std::cout << "Invalid filter type. Use 'user', 'cpu', or 'memory'.\n";
+                    Logger::getInstance().warning("User tried invalid filter type: " + filterType);
                 }
             } else {
                 std::cout << "Usage: filter <user|cpu|memory> [value]\n";
+                Logger::getInstance().warning("Invalid filter command usage - no arguments");
             }
         }
+
 
 
         else if (command == "log") {
             std::string logFile = "process_log.txt"; // Default file
             if (iss >> logFile) {
-                startLogging(logFile); // Function to start logging
+                if (!Logger::getInstance().start(logFile)) {
+                    std::cerr << "Failed to start logger on file: " << logFile << "\n";
+                } else {
+                    std::cout << "Logging started on file: " << logFile << "\n";
+                    Logger::getInstance().info("User started logging on file: " + logFile);
+                }
             } else {
-                std::cout << "Logging started. Default file: process_log.txt\n";
-                startLogging(logFile);
+                // Default file
+                if (!Logger::getInstance().start(logFile)) {
+                    std::cerr << "Failed to start logger on file: " << logFile << "\n";
+                } else {
+                    std::cout << "Logging started. Default file: process_log.txt\n";
+                    Logger::getInstance().info("User started logging on default file: process_log.txt");
+                }
             }
         }
 
         else if (command == "stop_monitor") {
             if (monitoringActive.load()) {
+                Logger::getInstance().info("User stopped monitoring.");
+
                 monitoringActive.store(false); // Stop monitoring
                 cv.notify_all();              // Notify the condition variable
                 if (monitoringThread.joinable()) {
@@ -349,6 +369,8 @@ void startCommandLoop() {
                 std::cout << "Monitoring stopped.\n";
             } else {
                 std::cout << "Monitoring is not active.\n";
+                Logger::getInstance().warning("User attempted to stop monitoring when not active.");
+
             }
             // Ensure prompt is displayed
             std::cout.flush();
@@ -363,16 +385,21 @@ void startCommandLoop() {
                 if (confirmation == 'y' || confirmation == 'Y') {
                     if (killProcess(pid)) {
                         std::cout << "Process " << pid << " has been terminated.\n";
+                        Logger::getInstance().info("User terminated process PID: " + std::to_string(pid));
                     } else {
                         std::cerr << "Failed to terminate process " << pid << ".\n";
+                        Logger::getInstance().error("Failed to terminate process PID: " + std::to_string(pid));
                     }
                 } else {
                     std::cout << "Termination of process " << pid << " canceled.\n";
+                    Logger::getInstance().info("User canceled termination of process PID: " + std::to_string(pid));
                 }
             } else {
                 std::cerr << "Usage: kill <PID>\n";
+                Logger::getInstance().warning("Invalid kill command usage");
             }
         }
+
         else if (command == "help") {
             printHelp();
         } 
@@ -381,6 +408,7 @@ void startCommandLoop() {
             std::cout << "\033[2J\033[H"; // ANSI escape code for clearing screen
         } 
         else if (command == "exit" || command == "quit") {
+            // Stop monitoring if active
             if (monitoringActive.load()) {
                 monitoringActive.store(false);
                 cv.notify_all();
@@ -388,8 +416,12 @@ void startCommandLoop() {
                     monitoringThread.join();
                 }
             }
+            Logger::getInstance().info("User exited the application.");
+            // Optionally stop the logger if you need to
+            Logger::getInstance().stop();
             break;
-        } else {
+        }
+     else {
             std::cerr << "Unknown command: " << command << "\n";
             std::cout << "Type 'help' to see available commands.\n";
         }

@@ -19,6 +19,7 @@ add_executable(process_manager_project
     src/command_handler.cpp
     src/globals.cpp
     src/logging.cpp
+    src/logger.cpp
 )
 
 # Link the readline library
@@ -52,6 +53,8 @@ add_executable(run_tests
     src/process_control.cpp
     src/globals.cpp
     src/logging.cpp
+    src/logger.cpp
+
 )
 
 # Link the test executable with Google Test and required libraries
