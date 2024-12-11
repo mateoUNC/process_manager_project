@@ -86,3 +86,22 @@
 
 #### Reduce Data Update Frequency
 - Implement a way to reduce the frequency of resource data updates, e.g., updating every 1-2 seconds instead of every
+
+
+## Additional Tasks:
+
+#### Add a Python virtual environment (venv) with all required libraries for the project.
+
+- Research and include necessary libraries in the requirements.txt file.
+
+- Make a conanfile.txt to auto-install libraries.
+
+- Document steps for setting up the Python environment.
+
+#### Add actions for Clang Format and Code Testing in CI/CD pipeline.
+
+- Implement formatting checks using Clang Format.
+
+- Add building actions.
+
+- Add unit tests and automated actions to validate code quality.

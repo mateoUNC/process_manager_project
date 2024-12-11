@@ -17,17 +17,30 @@ bool killProcess(int pid) {
 
     // Attempt to send SIGKILL to the process
     if (kill(pid, SIGKILL) == 0) {
-        // Process killed successfully
+        std::cout << "Process " << pid << " terminated successfully.\n";
         return true;
     } else {
-        // Handle errors (e.g., no such process or insufficient permissions)
-        perror("Error killing process");
+        // Handle specific errors
+        switch (errno) {
+            case ESRCH:
+                std::cerr << "Error: Process " << pid << " does not exist.\n";
+                break;
+            case EPERM:
+                std::cerr << "Error: Insufficient permissions to kill process " << pid << ".\n";
+                break;
+            default:
+                perror("Error killing process");
+                break;
+        }
         return false;
     }
 }
 
+
 bool killProcessesByCpu(double threshold) {
     bool anyKilled = false;
+    int successCount = 0;
+    int failureCount = 0;
 
     {
         std::lock_guard<std::mutex> lock(processMutex); // Ensure thread-safe access to `processes`
@@ -36,8 +49,21 @@ bool killProcessesByCpu(double threshold) {
                 if (kill(pid, SIGKILL) == 0) {
                     std::cout << "Killed process " << pid << " (CPU: " << process.cpuUsage << "%)\n";
                     anyKilled = true;
+                    successCount++;
                 } else {
-                    std::cerr << "Failed to kill process " << pid << ".\n";
+                    std::cerr << "Failed to kill process " << pid << ": ";
+                    switch (errno) {
+                        case ESRCH:
+                            std::cerr << "Process does not exist.\n";
+                            break;
+                        case EPERM:
+                            std::cerr << "Insufficient permissions.\n";
+                            break;
+                        default:
+                            perror("Error");
+                            break;
+                    }
+                    failureCount++;
                 }
             }
         }
@@ -45,6 +71,8 @@ bool killProcessesByCpu(double threshold) {
 
     if (!anyKilled) {
         std::cout << "No processes found exceeding the CPU usage threshold.\n";
+    } else {
+        std::cout << "Summary: " << successCount << " processes killed, " << failureCount << " failed.\n";
     }
 
     return anyKilled;
@@ -52,6 +80,8 @@ bool killProcessesByCpu(double threshold) {
 
 bool killProcessesByUser(const std::string& username) {
     bool anyKilled = false;
+    int successCount = 0;
+    int failureCount = 0;
 
     {
         std::lock_guard<std::mutex> lock(processMutex);
@@ -60,8 +90,21 @@ bool killProcessesByUser(const std::string& username) {
                 if (kill(pid, SIGKILL) == 0) {
                     std::cout << "Killed process " << pid << " (User: " << username << ")\n";
                     anyKilled = true;
+                    successCount++;
                 } else {
-                    std::cerr << "Failed to kill process " << pid << ".\n";
+                    std::cerr << "Failed to kill process " << pid << ": ";
+                    switch (errno) {
+                        case ESRCH:
+                            std::cerr << "Process does not exist.\n";
+                            break;
+                        case EPERM:
+                            std::cerr << "Insufficient permissions.\n";
+                            break;
+                        default:
+                            perror("Error");
+                            break;
+                    }
+                    failureCount++;
                 }
             }
         }
@@ -69,6 +112,8 @@ bool killProcessesByUser(const std::string& username) {
 
     if (!anyKilled) {
         std::cout << "No processes found for user: " << username << "\n";
+    } else {
+        std::cout << "Summary: " << successCount << " processes killed, " << failureCount << " failed.\n";
     }
 
     return anyKilled;
