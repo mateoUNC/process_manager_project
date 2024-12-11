@@ -17,6 +17,7 @@ add_executable(process_manager_project
     src/process_control.cpp
     src/command_handler.cpp
     src/globals.cpp
+    src/logging.cpp
 )
 
 # Link the readline library

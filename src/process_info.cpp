@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iostream>
 #include "utils.h"
+#include <iomanip>
 
 // Function to get process user
 std::string getProcessUser(int pid) {
@@ -56,6 +57,7 @@ double getProcessMemoryUsage(int pid) {
     return 0.0;
 }
 
+
 // Function to get active processes
 std::vector<Process> getActiveProcesses() {
     std::vector<Process> processes;
@@ -71,8 +73,9 @@ std::vector<Process> getActiveProcesses() {
         if (isdigit(entry->d_name[0])) {
             int pid = std::stoi(entry->d_name);
 
+            // Ensure a valid `Process` object is created
             Process process;
-            process.pid = pid;
+            process.pid = pid;  // Assign the pid correctly
             process.user = getProcessUser(pid);
             process.memoryUsage = getProcessMemoryUsage(pid);
             process.command = getProcessCommand(pid);
@@ -82,6 +85,5 @@ std::vector<Process> getActiveProcesses() {
     }
 
     closedir(dir);
-
     return processes;
 }

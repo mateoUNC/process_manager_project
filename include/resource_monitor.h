@@ -4,10 +4,14 @@
 #include <vector>
 #include "process_info.h"
 
-// Function declarations
-void monitorProcesses();
-long getTotalCpuTime();
-long getProcessTotalTime(int pid);
-double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long numCores);
+// Function declarations for monitoring processes
+void monitorProcesses();     // Monitors and updates the process list
+void monitorCpu();           // Monitors CPU usage
+void monitorMemory();        // Monitors memory usage
+
+// Helper functions for process monitoring
+long getTotalCpuTime();                                    // Gets total CPU time from /proc/stat
+long getProcessTotalTime(int pid);                         // Gets total CPU time of a specific process
+double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long numCores); // Calculates CPU usage percentage
 
 #endif // RESOURCE_MONITOR_H

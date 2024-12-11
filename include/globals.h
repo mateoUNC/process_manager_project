@@ -15,5 +15,7 @@ extern std::condition_variable cv;
 extern std::mutex cvMutex;
 extern std::string sortingCriterion;
 extern std::unordered_map<int, Process> processes;
+extern std::atomic<bool> monitoringPaused; // To track if monitoring is paused
+extern std::pair<std::string, std::string> filterCriterion; // Pair of filter type and value
 
 #endif // GLOBALS_H
