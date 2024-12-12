@@ -11,8 +11,8 @@
 #define COMMAND_HANDLER_H
 
 #include <string>
-#include <vector>
 #include <thread>
+#include <vector>
 
 /** @brief ANSI color code to reset text formatting. */
 #define RESET "\033[0m"
@@ -32,10 +32,10 @@
 /** @brief ANSI escape code for bold text. */
 #define BOLD "\033[1m"
 
-/** 
+/**
  * @brief Thread used for monitoring processes.
  *
- * This thread is responsible for executing the process monitoring logic. 
+ * This thread is responsible for executing the process monitoring logic.
  * It is controlled through the command loop.
  */
 extern std::thread monitoringThread;
@@ -43,7 +43,7 @@ extern std::thread monitoringThread;
 /**
  * @brief List of available commands for the command completer.
  *
- * This list contains all supported commands that the user can input 
+ * This list contains all supported commands that the user can input
  * into the command-line interface. It is used for auto-completion.
  */
 extern const std::vector<std::string> commands;
