@@ -32,6 +32,14 @@
 #define BOLD "\033[1m"
 
 /**
+ * @brief A thread used for monitoring processes.
+ *
+ * This thread is responsible for executing the process monitoring logic.
+ * It is managed and controlled through the command loop.
+ */
+extern std::thread monitoringThread;
+
+/**
  * @brief Generates command suggestions for auto-completion.
  *
  * This function is called repeatedly by the Readline library to generate
