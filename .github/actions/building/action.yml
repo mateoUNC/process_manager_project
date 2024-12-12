@@ -6,6 +6,7 @@ runs:
   steps:
     - name: Install Python and pip
       run: sudo apt-get update && sudo apt-get install -y python3-pip python3-venv
+      shell: bash
 
     - name: Setup Python venv
       run: |
@@ -13,6 +14,7 @@ runs:
         source .venv/bin/activate
         pip install --upgrade pip
         pip install conan
+      shell: bash
 
     - name: Conan install
       run: |
@@ -21,12 +23,15 @@ runs:
         cd build
         conan profile detect --force
         conan install .. --build=missing
+      shell: bash
 
     - name: Install build tools
       run: sudo apt-get install -y cmake build-essential libreadline-dev
+      shell: bash
 
     - name: Configure and Build
       run: |
         cd build
         cmake -DCMAKE_BUILD_TYPE=Release ..
         cmake --build .
+      shell: bash
