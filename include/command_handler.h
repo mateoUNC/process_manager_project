@@ -2,7 +2,7 @@
  * @file command_handler.h
  * @brief Handles user commands and manages the command loop for the Process Manager application.
  *
- * This header file declares functions and global variables related to command handling,
+ * This header file declares functions, variables, and constants related to command handling,
  * including starting the command loop, handling signals, and displaying help information
  * to the user. It also includes support for command-line auto-completion.
  */
@@ -12,6 +12,7 @@
 
 #include <string>
 #include <vector>
+#include <thread>
 
 /** @brief ANSI color code to reset text formatting. */
 #define RESET "\033[0m"
@@ -31,13 +32,21 @@
 /** @brief ANSI escape code for bold text. */
 #define BOLD "\033[1m"
 
-/**
- * @brief A thread used for monitoring processes.
+/** 
+ * @brief Thread used for monitoring processes.
  *
- * This thread is responsible for executing the process monitoring logic.
- * It is managed and controlled through the command loop.
+ * This thread is responsible for executing the process monitoring logic. 
+ * It is controlled through the command loop.
  */
 extern std::thread monitoringThread;
+
+/**
+ * @brief List of available commands for the command completer.
+ *
+ * This list contains all supported commands that the user can input 
+ * into the command-line interface. It is used for auto-completion.
+ */
+extern const std::vector<std::string> commands;
 
 /**
  * @brief Generates command suggestions for auto-completion.
