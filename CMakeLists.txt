@@ -18,8 +18,6 @@ add_executable(process_manager_project
     src/process_control.cpp
     src/command_handler.cpp
     src/globals.cpp
-    src/logging.cpp
-    src/logger.cpp
 )
 
 # Link the readline library
@@ -44,6 +42,7 @@ add_executable(run_tests
     test/test_process_info.cpp
     test/test_concurrent_updates.cpp
     test/test_process_control.cpp
+    test/test_command_handler.cpp
     src/resource_monitor.cpp
     src/logger.cpp
     src/utils.cpp
@@ -51,8 +50,6 @@ add_executable(run_tests
     src/process_display.cpp
     src/process_control.cpp
     src/globals.cpp
-    src/logging.cpp
-    src/logger.cpp
 )
 
 target_include_directories(run_tests PRIVATE
