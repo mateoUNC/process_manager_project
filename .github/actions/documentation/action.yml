@@ -7,15 +7,10 @@ runs:
     - name: "Checkout Repository"
       uses: actions/checkout@v3
 
-    - name: "Set up Doxygen"
-      uses: dawidd6/action-install-dot@v2
-      with:
-        version: '2.38.1'  # Specify the desired version of Graphviz
-
-    - name: "Install Doxygen"
+    - name: "Install Dependencies"
       run: |
         sudo apt-get update
-        sudo apt-get install -y doxygen
+        sudo apt-get install -y doxygen graphviz
       shell: bash
 
     - name: "Run Doxygen Command"
