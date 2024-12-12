@@ -9,7 +9,11 @@
 
 #include "globals.h"
 
-// Flag indicating whether monitoring is currently active.
+/**
+ * @brief Atomic flag indicating whether monitoring is currently active.
+ *
+ * Initialized to `false`. When set to `true`, monitoring threads collect and update process data.
+ */
 std::atomic<bool> monitoringActive(false);
 
 // Mutex to synchronize access to standard output (std::cout) to prevent race conditions.
