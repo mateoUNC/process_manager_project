@@ -86,7 +86,6 @@ double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long num
     return cpuUsage;
 }
 
-
 void monitorCpu()
 {
     Logger::getInstance().info("CPU monitoring thread started.");
@@ -131,7 +130,6 @@ void monitorCpu()
     Logger::getInstance().info("CPU monitoring thread stopped.");
 }
 
-
 void monitorMemory()
 {
     Logger::getInstance().info("Memory monitoring thread started.");
@@ -164,7 +162,6 @@ void monitorMemory()
     }
     Logger::getInstance().info("Memory monitoring thread stopped.");
 }
-
 
 void monitorProcesses()
 {

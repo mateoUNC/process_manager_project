@@ -17,7 +17,6 @@
 #include <signal.h> // For kill()
 #include <unistd.h> // For getpid()
 
-
 bool killProcess(int pid)
 {
     // Validate PID
