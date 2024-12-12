@@ -17,5 +17,8 @@ extern std::string sortingCriterion;
 extern std::unordered_map<int, Process> processes;
 extern std::atomic<bool> monitoringPaused; // To track if monitoring is paused
 extern std::pair<std::string, std::string> filterCriterion; // Pair of filter type and value
+extern std::unordered_map<int, std::string> pidToUserCache;
+extern std::unordered_map<int, std::string> pidToCommandCache;
+extern std::atomic<int> updateFrequency;
 
 #endif // GLOBALS_H

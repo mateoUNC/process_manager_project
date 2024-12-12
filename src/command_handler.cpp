@@ -33,6 +33,7 @@ const std::vector<std::string> commands = {
     "log",
     "help",
     "clear",
+    "set_update_freq",
     "exit",
     "quit"
 };
@@ -114,6 +115,10 @@ void printHelp() {
     std::cout << BOLD << CYAN << "  log [filename]" << RESET << "           "
               << YELLOW << "- Log process information to a file. Default file: 'process_log.txt'.\n" << RESET;
 
+    std::cout << BOLD << CYAN << "  set_update_freq <seconds>" << RESET << "  "
+              << YELLOW << "- Change the update frequency for resource monitoring.\n" << RESET
+              << "                     For example, 'set_update_freq 10' updates data every 10 seconds.\n";
+
     std::cout << BOLD << CYAN << "  clear" << RESET << "                   "
               << YELLOW << "- Clear the terminal screen.\n" << RESET;
 
@@ -131,6 +136,7 @@ void printHelp() {
     std::cout << "  " << GREEN << "filter user root" << RESET << "\n";
     std::cout << "  " << GREEN << "sort_by memory" << RESET << "\n";
     std::cout << "  " << GREEN << "log process_log.txt" << RESET << "\n";
+    std::cout << "  " << GREEN << "set_update_freq 10" << RESET << "\n";
 
     std::cout << BOLD << GREEN << "\nNotes:\n" << RESET;
     std::cout << YELLOW << "  - Use 'start_monitor' without arguments to sort by CPU usage by default.\n";
@@ -407,6 +413,22 @@ void startCommandLoop() {
             // Clear the terminal screen
             std::cout << "\033[2J\033[H"; // ANSI escape code for clearing screen
         } 
+
+        else if (command == "set_update_freq") {
+            int newFreq;
+            if (iss >> newFreq) {
+                if (newFreq <= 0) {
+                    std::cout << "Invalid frequency. Please provide a positive integer value.\n";
+                } else {
+                    updateFrequency.store(newFreq);
+                    std::cout << "Update frequency set to " << newFreq << " seconds.\n";
+                    Logger::getInstance().info("User changed update frequency to " + std::to_string(newFreq) + " seconds.");
+                }
+            } else {
+                std::cout << "Usage: set_update_freq <seconds>\n";
+            }
+        }
+
         else if (command == "exit" || command == "quit") {
             // Stop monitoring if active
             if (monitoringActive.load()) {

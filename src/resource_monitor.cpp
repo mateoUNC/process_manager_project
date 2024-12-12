@@ -78,7 +78,7 @@ void monitorCpu() {
         }
 
         if (!monitoringActive.load()) break;
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(updateFrequency.load()));
 
         long totalCpuTime = getTotalCpuTime();
         long totalCpuTimeDelta = totalCpuTime - previousTotalCpuTime;
@@ -111,7 +111,7 @@ void monitorMemory() {
         }
 
         if (!monitoringActive.load()) break;
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(updateFrequency.load()));
 
         auto activeProcesses = getActiveProcesses();
 
@@ -137,7 +137,7 @@ void monitorProcesses() {
         }
 
         if (!monitoringActive.load()) break;
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(updateFrequency.load()));
 
         std::vector<Process> processesVector;
 
