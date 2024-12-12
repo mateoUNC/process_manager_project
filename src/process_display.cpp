@@ -14,10 +14,28 @@
 #include <iomanip>
 #include <iostream>
 
-// Define ANSI color codes for styling the console output
+/**
+ * @def RESET
+ * @brief Resets terminal text formatting.
+ */
 #define RESET "\033[0m"
+
+/**
+ * @def RED
+ * @brief Sets terminal text color to red.
+ */
 #define RED "\033[31m"
+
+/**
+ * @def YELLOW
+ * @brief Sets terminal text color to yellow.
+ */
 #define YELLOW "\033[33m"
+
+/**
+ * @def GREEN
+ * @brief Sets terminal text color to green.
+ */
 #define GREEN "\033[32m"
 
 void printProcesses(const std::vector<Process>& processes)

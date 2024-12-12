@@ -2,7 +2,6 @@
 
 /**
  * @file main.cpp
- * @description Entry point for the Process Manager application.
  *
  * This source file contains the `main` function, which serves as the entry point for the
  * Process Manager application. It initializes essential components such as the Logger,

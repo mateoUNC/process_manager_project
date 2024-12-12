@@ -2,7 +2,6 @@
 
 /**
  * @file test_resource_monitor.cpp
- * @description Implements unit tests for the Resource Monitor module using Google Test.
  *
  * This test suite verifies the functionality of the Resource Monitor module, specifically
  * focusing on the retrieval and calculation of CPU and process times. The tests ensure

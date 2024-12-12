@@ -2,7 +2,6 @@
 
 /**
  * @file test_process_info.cpp
- * @description Implements unit tests for the Process Info module using Google Test.
  *
  * This test suite verifies the functionality and reliability of the Process Info module,
  * specifically focusing on ensuring that the retrieval of active processes is accurate

@@ -1,6 +1,5 @@
 /**
  * @file test_process_control.cpp
- * @description Implements unit tests for the Process Control module using Google Test and Google Mock.
  *
  * This source file contains test cases that verify the functionality of the Process Control module,
  * specifically focusing on the `killProcess` function. It includes both mock-based tests to simulate

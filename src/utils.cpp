@@ -1,6 +1,5 @@
 /**
  * @file utils.cpp
- * @description Implements utility functions for the Process Manager application.
  *
  * This source file contains helper functions that perform common tasks required
  * across different modules of the application. Specifically, it includes functions

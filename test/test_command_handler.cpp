@@ -1,6 +1,5 @@
 /**
  * @file test_command_handler.cpp
- * @description Implements unit tests for the Command Handler module using Google Test.
  *
  * This source file contains test cases that verify the functionality and robustness
  * of the Command Handler module. It includes tests for setting update frequencies,

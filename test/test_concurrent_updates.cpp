@@ -1,6 +1,5 @@
 /**
  * @file test_resource_monitor.cpp
- * @description Implements unit tests for the Resource Monitor module using Google Test.
  *
  * This source file contains test cases that verify the correctness and thread safety
  * of the Resource Monitor module. It includes tests for concurrency to ensure that
