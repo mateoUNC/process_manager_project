@@ -5,13 +5,14 @@
 #include <vector>
 
 // Structure to store process information
-struct Process {
-    int pid;                     // Process ID
-    std::string user;            // User owning the process
-    double cpuUsage;             // CPU usage percentage
-    double memoryUsage;          // Memory usage in MB
-    long prevTotalTime;          // Previous total CPU time of the process
-    std::string command;         // Command associated with the process
+struct Process
+{
+    int pid;             // Process ID
+    std::string user;    // User owning the process
+    double cpuUsage;     // CPU usage percentage
+    double memoryUsage;  // Memory usage in MB
+    long prevTotalTime;  // Previous total CPU time of the process
+    std::string command; // Command associated with the process
 };
 
 // Function declarations for process information

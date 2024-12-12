@@ -1,10 +1,12 @@
-#include "resource_monitor.h"
 #include "command_handler.h"
-#include <iostream>
 #include "logger.h"
+#include "resource_monitor.h"
+#include <iostream>
 
-int main() {
-    if (!Logger::getInstance().start("process_manager.log")) {
+int main()
+{
+    if (!Logger::getInstance().start("process_manager.log"))
+    {
         std::cerr << "Failed to start logger!" << std::endl;
     }
     // ... rest of your initialization

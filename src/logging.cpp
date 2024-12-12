@@ -1,14 +1,16 @@
 #include "globals.h"
+#include <atomic>
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <thread>
-#include <atomic>
-#include <chrono>
 
-void startLogging(const std::string& filename) {
+void startLogging(const std::string& filename)
+{
     static std::atomic<bool> loggingActive(false);
 
-    if (loggingActive.load()) {
+    if (loggingActive.load())
+    {
         std::cout << "Logging is already active.\n";
         return;
     }
@@ -16,19 +18,21 @@ void startLogging(const std::string& filename) {
     loggingActive.store(true);
     std::thread([filename]() {
         std::ofstream logFile(filename, std::ios::out | std::ios::app);
-        if (!logFile.is_open()) {
+        if (!logFile.is_open())
+        {
             std::cerr << "Failed to open log file: " << filename << "\n";
             loggingActive.store(false);
             return;
         }
 
-        while (loggingActive.load()) {
+        while (loggingActive.load())
+        {
             {
                 std::lock_guard<std::mutex> lock(processMutex);
-                for (const auto& [pid, process] : processes) {
-                    logFile << "PID: " << process.pid
-                            << ", User: " << process.user
-                            << ", CPU: " << process.cpuUsage << "%"
+                for (const auto& [pid, process] : processes)
+                {
+                    logFile << "PID: " << process.pid << ", User: " << process.user << ", CPU: " << process.cpuUsage
+                            << "%"
                             << ", Memory: " << process.memoryUsage << " MB"
                             << ", Command: " << process.command << "\n";
                 }

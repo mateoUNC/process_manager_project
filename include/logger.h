@@ -1,23 +1,25 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <atomic>
+#include <condition_variable>
+#include <fstream>
+#include <mutex>
+#include <queue>
 #include <string>
 #include <thread>
-#include <atomic>
-#include <mutex>
-#include <condition_variable>
-#include <queue>
-#include <fstream>
 
-enum class LogLevel {
+enum class LogLevel
+{
     INFO,
     WARNING,
     ERROR,
     CRITICAL
 };
 
-class Logger {
-public:
+class Logger
+{
+  public:
     static Logger& getInstance();
 
     // Start logging to a specific file
@@ -35,7 +37,7 @@ public:
     void error(const std::string& message);
     void critical(const std::string& message);
 
-private:
+  private:
     Logger();
     ~Logger();
 

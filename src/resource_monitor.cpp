@@ -1,22 +1,24 @@
 #include "resource_monitor.h"
-#include "process_display.h"
-#include "process_info.h"    // For getActiveProcesses()
 #include "globals.h"
-#include "logger.h"          // Include the Logger header
+#include "logger.h" // Include the Logger header
+#include "process_display.h"
+#include "process_info.h" // For getActiveProcesses()
+#include <algorithm>
+#include <chrono>
+#include <fstream>  // For std::ifstream
+#include <iostream> // For std::cout, std::cerr
+#include <sstream>  // For std::stringstream
+#include <string>   // For std::string
+#include <thread>
 #include <unistd.h>
 #include <unordered_map>
 #include <unordered_set>
-#include <thread>
-#include <chrono>
-#include <algorithm>
-#include <iostream>     // For std::cout, std::cerr
-#include <fstream>      // For std::ifstream
-#include <sstream>      // For std::stringstream
-#include <string>       // For std::string
 
-long getTotalCpuTime() {
+long getTotalCpuTime()
+{
     std::ifstream statFile("/proc/stat");
-    if (!statFile.is_open()) {
+    if (!statFile.is_open())
+    {
         std::cerr << "Failed to open /proc/stat" << std::endl;
         Logger::getInstance().error("Failed to open /proc/stat file.");
         return 0; // Return a default value
@@ -34,9 +36,11 @@ long getTotalCpuTime() {
     return user + nice + system + idle + iowait + irq + softirq + steal;
 }
 
-long getProcessTotalTime(int pid) {
+long getProcessTotalTime(int pid)
+{
     std::ifstream statFile("/proc/" + std::to_string(pid) + "/stat");
-    if (!statFile.is_open()) {
+    if (!statFile.is_open())
+    {
         std::string errMsg = "Failed to open /proc/" + std::to_string(pid) + "/stat";
         std::cerr << errMsg << std::endl;
         Logger::getInstance().error(errMsg);
@@ -50,15 +54,18 @@ long getProcessTotalTime(int pid) {
     long utime, stime, cutime, cstime;
 
     // Skip fields until utime
-    for (int i = 0; i < 13; ++i) ss >> ignored;
+    for (int i = 0; i < 13; ++i)
+        ss >> ignored;
     ss >> utime >> stime >> cutime >> cstime;
 
     long totalProcessTime = utime + stime + cutime + cstime;
     return totalProcessTime;
 }
 
-double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long numCores) {
-    if (totalCpuTimeDelta == 0) {
+double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long numCores)
+{
+    if (totalCpuTimeDelta == 0)
+    {
         Logger::getInstance().warning("Total CPU time delta is zero, cannot calculate CPU usage.");
         return 0.0;
     }
@@ -67,17 +74,21 @@ double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long num
     return cpuUsage;
 }
 
-void monitorCpu() {
+void monitorCpu()
+{
     Logger::getInstance().info("CPU monitoring thread started.");
     long previousTotalCpuTime = getTotalCpuTime();
 
-    while (monitoringActive.load()) {
+    while (monitoringActive.load())
+    {
         // Pause if monitoring is paused
-        while (monitoringPaused.load() && monitoringActive.load()) {
+        while (monitoringPaused.load() && monitoringActive.load())
+        {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
-        if (!monitoringActive.load()) break;
+        if (!monitoringActive.load())
+            break;
         std::this_thread::sleep_for(std::chrono::seconds(updateFrequency.load()));
 
         long totalCpuTime = getTotalCpuTime();
@@ -88,13 +99,15 @@ void monitorCpu() {
 
         {
             std::lock_guard<std::mutex> lock(processMutex);
-            for (auto& process : activeProcesses) {
+            for (auto& process : activeProcesses)
+            {
                 long totalProcessTime = getProcessTotalTime(process.pid);
                 long processTimeDelta = totalProcessTime - processes[process.pid].prevTotalTime;
 
-                processes[process.pid] = process;  // Update the entire Process struct
+                processes[process.pid] = process; // Update the entire Process struct
                 processes[process.pid].prevTotalTime = totalProcessTime;
-                processes[process.pid].cpuUsage = calculateCpuUsage(processTimeDelta, totalCpuTimeDelta, sysconf(_SC_NPROCESSORS_ONLN));
+                processes[process.pid].cpuUsage =
+                    calculateCpuUsage(processTimeDelta, totalCpuTimeDelta, sysconf(_SC_NPROCESSORS_ONLN));
             }
         }
     }
@@ -102,15 +115,19 @@ void monitorCpu() {
     Logger::getInstance().info("CPU monitoring thread stopped.");
 }
 
-void monitorMemory() {
+void monitorMemory()
+{
     Logger::getInstance().info("Memory monitoring thread started.");
-    while (monitoringActive.load()) {
+    while (monitoringActive.load())
+    {
         // Pause if monitoring is paused
-        while (monitoringPaused.load() && monitoringActive.load()) {
+        while (monitoringPaused.load() && monitoringActive.load())
+        {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
-        if (!monitoringActive.load()) break;
+        if (!monitoringActive.load())
+            break;
         std::this_thread::sleep_for(std::chrono::seconds(updateFrequency.load()));
 
         auto activeProcesses = getActiveProcesses();
@@ -118,7 +135,8 @@ void monitorMemory() {
         // Update memory usage for all processes
         {
             std::lock_guard<std::mutex> lock(processMutex);
-            for (auto& process : activeProcesses) {
+            for (auto& process : activeProcesses)
+            {
                 processes[process.pid].memoryUsage = process.memoryUsage;
                 processes[process.pid].command = process.command;
                 processes[process.pid].user = process.user;
@@ -128,32 +146,40 @@ void monitorMemory() {
     Logger::getInstance().info("Memory monitoring thread stopped.");
 }
 
-void monitorProcesses() {
+void monitorProcesses()
+{
     Logger::getInstance().info("Process display thread started.");
-    while (monitoringActive.load()) {
+    while (monitoringActive.load())
+    {
         // Pause if monitoring is paused
-        while (monitoringPaused.load() && monitoringActive.load()) {
+        while (monitoringPaused.load() && monitoringActive.load())
+        {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
-        if (!monitoringActive.load()) break;
+        if (!monitoringActive.load())
+            break;
         std::this_thread::sleep_for(std::chrono::seconds(updateFrequency.load()));
 
         std::vector<Process> processesVector;
 
         {
             std::lock_guard<std::mutex> lock(processMutex);
-            for (const auto& pair : processes) {
+            for (const auto& pair : processes)
+            {
                 const auto& process = pair.second;
 
                 // Apply filter
-                if (filterCriterion.first == "user" && process.user != filterCriterion.second) {
-                    continue; 
-                }
-                if (filterCriterion.first == "cpu" && process.cpuUsage <= std::stod(filterCriterion.second)) {
+                if (filterCriterion.first == "user" && process.user != filterCriterion.second)
+                {
                     continue;
                 }
-                if (filterCriterion.first == "memory" && process.memoryUsage <= std::stod(filterCriterion.second)) {
+                if (filterCriterion.first == "cpu" && process.cpuUsage <= std::stod(filterCriterion.second))
+                {
+                    continue;
+                }
+                if (filterCriterion.first == "memory" && process.memoryUsage <= std::stod(filterCriterion.second))
+                {
                     continue;
                 }
 
@@ -162,14 +188,15 @@ void monitorProcesses() {
         }
 
         // Sort by the selected criterion
-        if (sortingCriterion == "cpu") {
-            std::sort(processesVector.begin(), processesVector.end(), [](const Process& a, const Process& b) {
-                return a.cpuUsage > b.cpuUsage;
-            });
-        } else if (sortingCriterion == "memory") {
-            std::sort(processesVector.begin(), processesVector.end(), [](const Process& a, const Process& b) {
-                return a.memoryUsage > b.memoryUsage;
-            });
+        if (sortingCriterion == "cpu")
+        {
+            std::sort(processesVector.begin(), processesVector.end(),
+                      [](const Process& a, const Process& b) { return a.cpuUsage > b.cpuUsage; });
+        }
+        else if (sortingCriterion == "memory")
+        {
+            std::sort(processesVector.begin(), processesVector.end(),
+                      [](const Process& a, const Process& b) { return a.memoryUsage > b.memoryUsage; });
         }
 
         // Clear the screen and display the filtered, sorted list

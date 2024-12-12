@@ -1,7 +1,7 @@
 #ifndef PROCESS_CONTROL_H
 #define PROCESS_CONTROL_H
 
-#include <string> 
+#include <string>
 
 bool killProcess(int pid);
 bool killProcessesByCpu(double threshold);
