@@ -20,22 +20,6 @@
 #define YELLOW "\033[33m"
 #define GREEN "\033[32m"
 
-/**
- * @brief Displays a formatted list of processes in the console.
- *
- * The `printProcesses` function takes a vector of `Process` structures and outputs
- * their details in a neatly formatted table. It applies color-coding to the CPU usage
- * column to indicate the intensity of resource consumption:
- * - **Red**: High CPU usage (>20%)
- * - **Yellow**: Moderate CPU usage (>10%)
- * - **Green**: Low CPU usage (≤10%)
- *
- * The function truncates the command string if it exceeds 35 characters to maintain
- * the table's alignment and readability. It also limits the display to the first 30
- * processes to prevent excessive output.
- *
- * @param processes A vector of `Process` structures containing information about active processes.
- */
 void printProcesses(const std::vector<Process>& processes)
 {
     // Print the table header with column names

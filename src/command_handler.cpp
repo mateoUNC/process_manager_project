@@ -32,17 +32,6 @@ const std::vector<std::string> commands = {
     "start_monitor", "stop_monitor", "pause_monitor", "resume_monitor", "list_processes",  "kill", "kill_all", "filter",
     "sort_by",       "log",          "help",          "clear",          "set_update_freq", "exit", "quit"};
 
-/**
- * @brief Generates possible command completions based on user input.
- *
- * This function is used by the Readline library to provide auto-completion suggestions
- * for the available commands. It iterates through the list of predefined commands and
- * returns those that match the current input prefix.
- *
- * @param text The current text input by the user.
- * @param state The state of the completion (0 for the first match, 1 for the second, etc.).
- * @return A pointer to the next matching command string, or nullptr if no more matches are found.
- */
 char* commandGenerator(const char* text, int state)
 {
     static size_t listIndex, len;
@@ -64,17 +53,6 @@ char* commandGenerator(const char* text, int state)
     return nullptr; // No more matches
 }
 
-/**
- * @brief Completes the command input using the Readline library.
- *
- * This function is set as the completion function for Readline. It ensures that only the
- * first word (command) is autocompleted, preventing completion of arguments or options.
- *
- * @param text The current text input by the user.
- * @param start The start position of the word to be completed.
- * @param end The end position of the word to be completed.
- * @return An array of matching command strings, or nullptr if no matches are found.
- */
 char** commandCompleter(const char* text, int start, int end)
 {
     // Only autocomplete the first word (command)
@@ -85,15 +63,6 @@ char** commandCompleter(const char* text, int start, int end)
     return nullptr;
 }
 
-/**
- * @brief Handles the SIGINT signal (Ctrl+C) to gracefully stop monitoring.
- *
- * When the user presses Ctrl+C, this signal handler checks if monitoring is active.
- * If it is, it stops the monitoring threads and notifies the user, allowing the
- * application to remain responsive for further commands.
- *
- * @param sig The signal number (should be SIGINT).
- */
 void handleSigint(int sig)
 {
     if (monitoringActive.load())
@@ -114,12 +83,6 @@ void handleSigint(int sig)
     std::cout.flush();
 }
 
-/**
- * @brief Displays the help menu with available commands and their descriptions.
- *
- * This function outputs a formatted list of all supported commands, their usage,
- * and examples to assist the user in interacting with the Process Manager application.
- */
 void printHelp()
 {
     std::cout << BOLD << GREEN << "Available Commands:\n" << RESET;
@@ -198,17 +161,6 @@ void printHelp()
               << RESET;
 }
 
-/**
- * @brief Initiates the interactive command loop for processing user inputs.
- *
- * This function sets up the Readline library for handling user inputs with features like
- * auto-completion and history. It continuously prompts the user for commands, parses the
- * input, and executes the corresponding actions by interfacing with other modules such as
- * logging, process control, and resource monitoring.
- *
- * The command loop supports various commands to start/stop monitoring, filter and sort processes,
- * kill individual or multiple processes, manage logging, and display help information.
- */
 void startCommandLoop()
 {
     // Set up the tab completion function for Readline

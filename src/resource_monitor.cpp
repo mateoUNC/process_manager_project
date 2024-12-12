@@ -26,14 +26,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-/**
- * @brief Retrieves the total CPU time from the system.
- *
- * This function reads the `/proc/stat` file to obtain aggregate CPU time across all cores.
- * It parses the first line starting with "cpu" and sums up the various CPU time fields.
- *
- * @return The total CPU time in jiffies, or 0 if the file cannot be read.
- */
 long getTotalCpuTime()
 {
     std::ifstream statFile("/proc/stat");
@@ -56,16 +48,6 @@ long getTotalCpuTime()
     return user + nice + system + idle + iowait + irq + softirq + steal;
 }
 
-/**
- * @brief Retrieves the total CPU time consumed by a specific process.
- *
- * This function reads the `/proc/[pid]/stat` file to obtain CPU time information
- * for the specified process. It parses the necessary fields to calculate the total
- * CPU time (user time + system time + children user time + children system time).
- *
- * @param pid The Process ID of the target process.
- * @return The total CPU time in jiffies, or 0 if the file cannot be read.
- */
 long getProcessTotalTime(int pid)
 {
     std::ifstream statFile("/proc/" + std::to_string(pid) + "/stat");
@@ -92,17 +74,6 @@ long getProcessTotalTime(int pid)
     return totalProcessTime;
 }
 
-/**
- * @brief Calculates the CPU usage percentage for a process.
- *
- * This function computes the CPU usage based on the difference in process time and
- * total CPU time between two intervals, adjusted for the number of CPU cores.
- *
- * @param processTimeDelta The difference in process CPU time between two intervals.
- * @param totalCpuTimeDelta The difference in total CPU time between two intervals.
- * @param numCores The number of CPU cores available on the system.
- * @return The CPU usage percentage of the process.
- */
 double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long numCores)
 {
     if (totalCpuTimeDelta == 0)
@@ -115,14 +86,7 @@ double calculateCpuUsage(long processTimeDelta, long totalCpuTimeDelta, long num
     return cpuUsage;
 }
 
-/**
- * @brief Monitors CPU usage of processes.
- *
- * This function runs in a dedicated thread, periodically calculating and updating
- * the CPU usage of each monitored process. It reads total CPU time and individual
- * process times to compute the CPU usage percentage. The function respects the
- * monitoringActive and monitoringPaused flags to control its execution flow.
- */
+
 void monitorCpu()
 {
     Logger::getInstance().info("CPU monitoring thread started.");
@@ -167,14 +131,7 @@ void monitorCpu()
     Logger::getInstance().info("CPU monitoring thread stopped.");
 }
 
-/**
- * @brief Monitors memory usage of processes.
- *
- * This function runs in a dedicated thread, periodically updating the memory usage
- * of each monitored process. It reads the latest memory usage data from the system
- * and updates the shared processes map accordingly. The function respects the
- * monitoringActive and monitoringPaused flags to control its execution flow.
- */
+
 void monitorMemory()
 {
     Logger::getInstance().info("Memory monitoring thread started.");
@@ -208,16 +165,7 @@ void monitorMemory()
     Logger::getInstance().info("Memory monitoring thread stopped.");
 }
 
-/**
- * @brief Monitors and displays processes based on current filters and sorting criteria.
- *
- * This function runs in a dedicated thread, periodically fetching the list of active
- * processes, applying any user-defined filters (such as by user, CPU usage, or memory usage),
- * sorting the processes based on the selected criterion (CPU or memory), and displaying the
- * formatted list to the user. It ensures that the display remains updated and reflects the
- * current state of the system's processes. The function respects the monitoringActive and
- * monitoringPaused flags to control its execution flow.
- */
+
 void monitorProcesses()
 {
     Logger::getInstance().info("Process display thread started.");

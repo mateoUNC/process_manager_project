@@ -17,17 +17,7 @@
 #include <signal.h> // For kill()
 #include <unistd.h> // For getpid()
 
-/**
- * @brief Attempts to terminate a process with the specified PID.
- *
- * This function sends a SIGKILL signal to the process identified by the given PID.
- * It performs several checks to ensure that the PID is valid and that the process
- * can be safely terminated. It handles common errors such as invalid PIDs,
- * insufficient permissions, and attempts to kill the current process.
- *
- * @param pid The Process ID of the target process to kill.
- * @return true if the process was successfully terminated, false otherwise.
- */
+
 bool killProcess(int pid)
 {
     // Validate PID
@@ -69,17 +59,6 @@ bool killProcess(int pid)
     }
 }
 
-/**
- * @brief Terminates all processes exceeding a specified CPU usage threshold.
- *
- * This function iterates through the monitored processes and sends a SIGKILL signal
- * to any process whose CPU usage surpasses the provided threshold. It provides a
- * summary of successful and failed termination attempts. Thread safety is ensured
- * by locking the processes map during iteration.
- *
- * @param threshold The CPU usage percentage threshold. Processes exceeding this value will be killed.
- * @return true if at least one process was successfully terminated, false otherwise.
- */
 bool killProcessesByCpu(double threshold)
 {
     bool anyKilled = false;
@@ -134,17 +113,6 @@ bool killProcessesByCpu(double threshold)
     return anyKilled;
 }
 
-/**
- * @brief Terminates all processes owned by a specified user.
- *
- * This function iterates through the monitored processes and sends a SIGKILL signal
- * to any process owned by the specified username. It provides a summary of successful
- * and failed termination attempts. Thread safety is ensured by locking the processes
- * map during iteration.
- *
- * @param username The username whose processes should be terminated.
- * @return true if at least one process was successfully terminated, false otherwise.
- */
 bool killProcessesByUser(const std::string& username)
 {
     bool anyKilled = false;
