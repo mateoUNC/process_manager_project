@@ -15,7 +15,7 @@
 #include <mutex>
 #include <unordered_map>
 
-/** 
+/**
  * @brief Atomic flag indicating whether monitoring is active.
  *
  * When `true`, the monitoring threads are actively collecting and updating process data.
@@ -23,33 +23,33 @@
  */
 extern std::atomic<bool> monitoringActive;
 
-/** 
- * @brief Mutex to synchronize access to standard output (std::cout). 
+/**
+ * @brief Mutex to synchronize access to standard output (std::cout).
  *
  * Ensures thread-safe console output to prevent race conditions and garbled text.
  */
 extern std::mutex coutMutex;
 
-/** 
- * @brief Mutex to synchronize access to the processes map. 
+/**
+ * @brief Mutex to synchronize access to the processes map.
  *
  * Protects shared access to the `processes` map, ensuring thread-safe operations.
  */
 extern std::mutex processMutex;
 
-/** 
+/**
  * @brief Condition variable used for thread synchronization.
  *
  * Used in conjunction with `cvMutex` to pause or resume monitoring threads.
  */
 extern std::condition_variable cv;
 
-/** 
+/**
  * @brief Mutex associated with the condition variable for synchronization.
  */
 extern std::mutex cvMutex;
 
-/** 
+/**
  * @brief String indicating the current sorting criterion ("cpu" or "memory").
  *
  * Determines the order in which monitored processes are displayed.
@@ -64,7 +64,7 @@ extern std::string sortingCriterion;
  */
 extern std::unordered_map<int, Process> processes;
 
-/** 
+/**
  * @brief Atomic flag indicating whether monitoring is paused.
  *
  * When `true`, monitoring threads should stop updating data and wait.
@@ -79,7 +79,7 @@ extern std::atomic<bool> monitoringPaused;
  */
 extern std::pair<std::string, std::string> filterCriterion;
 
-/** 
+/**
  * @brief Cache mapping PIDs to usernames.
  *
  * This unordered map caches the association between process IDs and their corresponding
@@ -87,7 +87,7 @@ extern std::pair<std::string, std::string> filterCriterion;
  */
 extern std::unordered_map<int, std::string> pidToUserCache;
 
-/** 
+/**
  * @brief Cache mapping PIDs to command names.
  *
  * This unordered map caches the association between process IDs and their corresponding
@@ -95,7 +95,7 @@ extern std::unordered_map<int, std::string> pidToUserCache;
  */
 extern std::unordered_map<int, std::string> pidToCommandCache;
 
-/** 
+/**
  * @brief Atomic integer representing the update frequency in seconds.
  *
  * Determines how often the monitoring threads update CPU and memory usage information.
