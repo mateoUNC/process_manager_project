@@ -1,0 +1,32 @@
+name: "Build Project"
+description: "Build project using Conan and CMake"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Python and pip
+      run: sudo apt-get update && sudo apt-get install -y python3-pip python3-venv
+
+    - name: Setup Python venv
+      run: |
+        python3 -m venv .venv
+        source .venv/bin/activate
+        pip install --upgrade pip
+        pip install conan
+
+    - name: Conan install
+      run: |
+        source .venv/bin/activate
+        mkdir -p build
+        cd build
+        conan profile detect --force
+        conan install .. --build=missing
+
+    - name: Install build tools
+      run: sudo apt-get install -y cmake build-essential libreadline-dev
+
+    - name: Configure and Build
+      run: |
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Release ..
+        cmake --build .
