@@ -4,18 +4,13 @@ description: "Check code style using clang-format"
 runs:
   using: "composite"
   steps:
-    - name: Install Clang-Format
-      run: sudo apt-get update && sudo apt-get install -y clang-format
-
-    - name: Run clang-format check
-      shell: bash
+    - name: "Run clang-format"
       run: |
         PROJECT_PATH=$(pwd)
 
         SOURCE_FILES=$(find $PROJECT_PATH/src $PROJECT_PATH/include -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" -o -name "*.c" \) | tr "\n" " ")
 
         ERROR_FILE_FLAG=$PROJECT_PATH/clang-format_errors.txt
-
         clang-format -n $SOURCE_FILES 2> ${ERROR_FILE_FLAG}
 
         if [ -s $ERROR_FILE_FLAG ]; then
@@ -25,10 +20,4 @@ runs:
         else
             echo "All files are formatted correctly."
         fi
-
-    - uses: actions/upload-artifact@v3
-      if: failure()
-      with:
-        name: clang-format-errors
-        path: ./clang-format_errors.txt
-        retention-days: 1
+      shell: bash  # Add this line
