@@ -13,19 +13,19 @@ runs:
         sudo apt-get update
 
         # Install required packages
-        sudo apt-get install -y wget unzip graphviz
+        sudo apt-get install -y wget unzip graphviz cmake build-essential
 
         # Define the Doxygen version to install
-        DOXYGEN_VERSION=1.9.6
+        DOXYGEN_VERSION=Release_1_9_6
 
-        # Download the Doxygen binary tarball
-        wget https://github.com/doxygen/doxygen/archive/refs/tags/Release_${DOXYGEN_VERSION}.tar.gz -O doxygen.tar.gz
+        # Download the Doxygen source tarball
+        wget https://github.com/doxygen/doxygen/archive/refs/tags/${DOXYGEN_VERSION}.tar.gz -O doxygen.tar.gz
 
         # Extract the tarball
         tar -xzf doxygen.tar.gz
 
         # Navigate into the extracted directory
-        cd doxygen-Release_${DOXYGEN_VERSION}
+        cd doxygen-${DOXYGEN_VERSION}
 
         # Build and install Doxygen
         mkdir build && cd build
