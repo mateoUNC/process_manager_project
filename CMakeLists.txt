@@ -38,7 +38,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Add the test executable
 add_executable(run_tests
     test/test_main.cpp
     test/test_resource_monitor.cpp
@@ -54,12 +53,13 @@ add_executable(run_tests
     src/globals.cpp
     src/logging.cpp
     src/logger.cpp
-
 )
 
-# Link the test executable with Google Test and required libraries
-target_link_libraries(run_tests PRIVATE gtest gtest_main pthread readline)
-target_compile_definitions(run_tests PRIVATE TESTING)
+target_include_directories(run_tests PRIVATE
+    ${CMAKE_BINARY_DIR}/build/_deps/googletest-src/googlemock/include
+    ${CMAKE_BINARY_DIR}/build/_deps/googletest-src/googletest/include
+)
 
-# Add tests to CMake's test suite
+target_link_libraries(run_tests PRIVATE GTest::gmock_main pthread readline)
+target_compile_definitions(run_tests PRIVATE TESTING)
 add_test(NAME ProcessManagerTests COMMAND run_tests)
