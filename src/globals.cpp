@@ -35,7 +35,11 @@ std::string sortingCriterion = "cpu";
 // Unordered map storing information about monitored processes, indexed by their Process ID (PID).
 std::unordered_map<int, Process> processes;
 
-// Atomic flag indicating whether monitoring is paused. When true, monitoring threads should wait.
+/**
+ * @brief Atomic flag indicating whether monitoring is currently Paused.
+ *
+ * Initialized to `false`. When set to `true`, monitoring threads collect and update process data.
+ */
 std::atomic<bool> monitoringPaused(false);
 
 // Pair representing the current filter criterion:
@@ -50,6 +54,9 @@ std::unordered_map<int, std::string> pidToUserCache;
 // Cache mapping PIDs to command names to reduce redundant lookups and improve performance.
 std::unordered_map<int, std::string> pidToCommandCache;
 
-// Atomic integer representing the frequency (in seconds) at which resource monitoring updates occur.
-// Defaults to updating every 5 seconds.
+/**
+ * @brief Frecuency update.
+ *
+ * Default in 5 seconds.
+ */
 std::atomic<int> updateFrequency(5);
