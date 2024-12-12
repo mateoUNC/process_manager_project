@@ -9,8 +9,33 @@ runs:
 
     - name: "Install Dependencies"
       run: |
+        # Update package lists
         sudo apt-get update
-        sudo apt-get install -y doxygen graphviz
+
+        # Install required packages
+        sudo apt-get install -y wget unzip graphviz
+
+        # Define the Doxygen version to install
+        DOXYGEN_VERSION=1.9.6
+
+        # Download the Doxygen binary tarball
+        wget https://github.com/doxygen/doxygen/archive/refs/tags/Release_${DOXYGEN_VERSION}.tar.gz -O doxygen.tar.gz
+
+        # Extract the tarball
+        tar -xzf doxygen.tar.gz
+
+        # Navigate into the extracted directory
+        cd doxygen-Release_${DOXYGEN_VERSION}
+
+        # Build and install Doxygen
+        mkdir build && cd build
+        cmake ..
+        make -j$(nproc)
+        sudo make install
+
+        # Verify installation
+        doxygen --version
+
       shell: bash
 
     - name: "Run Doxygen Command"
