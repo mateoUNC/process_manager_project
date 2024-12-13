@@ -16,47 +16,81 @@
  */
 std::atomic<bool> monitoringActive(false);
 
-// Mutex to synchronize access to standard output (std::cout) to prevent race conditions.
+/**
+ * @brief Mutex to synchronize access to standard output (std::cout).
+ *
+ * Prevents race conditions and ensures thread-safe console output.
+ */
 std::mutex coutMutex;
 
-// Mutex to protect access to the shared processes map, ensuring thread-safe operations.
+/**
+ * @brief Mutex to protect access to the shared processes map.
+ *
+ * Ensures thread-safe operations when reading or updating the `processes` map.
+ */
 std::mutex processMutex;
 
-// Condition variable used to coordinate thread activities, such as pausing and resuming monitoring.
+/**
+ * @brief Condition variable used to coordinate thread activities.
+ *
+ * Pauses or resumes monitoring threads based on specific conditions.
+ */
 std::condition_variable cv;
 
-// Mutex associated with the condition variable for synchronizing access.
+/**
+ * @brief Mutex associated with the condition variable.
+ *
+ * Provides thread-safe access to the condition variable.
+ */
 std::mutex cvMutex;
 
-// String representing the current sorting criterion for displaying processes.
-// Defaults to sorting by CPU usage.
+/**
+ * @brief Current sorting criterion for process display.
+ *
+ * Defaults to `"cpu"`. Determines the order in which processes are displayed (e.g., by CPU or memory usage).
+ */
 std::string sortingCriterion = "cpu";
 
-// Unordered map storing information about monitored processes, indexed by their Process ID (PID).
+/**
+ * @brief Map storing information about monitored processes.
+ *
+ * Indexed by process ID (PID). Allows efficient access and updates of process information.
+ */
 std::unordered_map<int, Process> processes;
 
 /**
- * @brief Atomic flag indicating whether monitoring is currently Paused.
+ * @brief Atomic flag indicating whether monitoring is currently paused.
  *
- * Initialized to `false`. When set to `true`, monitoring threads collect and update process data.
+ * Initialized to `false`. When set to `true`, monitoring threads stop updating data and wait.
  */
 std::atomic<bool> monitoringPaused(false);
 
-// Pair representing the current filter criterion:
-// - First element: Type of filter ("user", "cpu", "memory", or "none").
-// - Second element: Value associated with the filter.
-// Defaults to no filter.
+/**
+ * @brief Current filter criterion for displaying processes.
+ *
+ * Defaults to `{"none", ""}`. Consists of:
+ * - Filter type (e.g., `"user"`, `"cpu"`, `"memory"`).
+ * - Filter value (e.g., `"root"`, `50%`, `"100 MB"`).
+ */
 std::pair<std::string, std::string> filterCriterion = {"none", ""};
 
-// Cache mapping PIDs to usernames to reduce redundant lookups and improve performance.
+/**
+ * @brief Cache mapping PIDs to usernames.
+ *
+ * Reduces redundant lookups by storing associations between process IDs and usernames.
+ */
 std::unordered_map<int, std::string> pidToUserCache;
 
-// Cache mapping PIDs to command names to reduce redundant lookups and improve performance.
+/**
+ * @brief Cache mapping PIDs to command names.
+ *
+ * Reduces redundant lookups by storing associations between process IDs and their commands.
+ */
 std::unordered_map<int, std::string> pidToCommandCache;
 
 /**
- * @brief Frecuency update.
+ * @brief Frequency (in seconds) for updating resource monitoring data.
  *
- * Default in 5 seconds.
+ * Initialized to `5`. Determines how often monitoring threads update CPU and memory usage information.
  */
 std::atomic<int> updateFrequency(5);
